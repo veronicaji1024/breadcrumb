@@ -69,12 +69,14 @@ class NotchWindowController: NSWindowController {
             .sink { [weak notchWindow, weak viewModel] status in
                 switch status {
                 case .opened:
-                    // Accept mouse events when opened so buttons work
-                    notchWindow?.ignoresMouseEvents = false
-                    // Only steal focus on explicit user action (click or hotkey)
+                    // Only accept mouse events and steal focus on explicit action
                     if viewModel?.openReason == .click {
+                        notchWindow?.ignoresMouseEvents = false
                         NSApp.activate(ignoringOtherApps: false)
                         notchWindow?.makeKey()
+                    } else {
+                        // Hover-open: show content but don't intercept anything
+                        notchWindow?.ignoresMouseEvents = true
                     }
                 case .closed, .popping:
                     // Ignore mouse events when closed so clicks pass through
