@@ -8,7 +8,8 @@
 import AppKit
 
 class HotkeyMonitor {
-    private var monitor: Any?
+    private var globalMonitor: Any?
+    private var localMonitor: Any?
     private var lastCommandReleaseTime: TimeInterval = 0
     private var commandWasAlone = true
 
@@ -21,15 +22,26 @@ class HotkeyMonitor {
     init() {}
 
     func start() {
-        monitor = NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
+        // Global monitor: captures events when other apps are focused
+        globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
             self?.handleFlagsChanged(event)
+        }
+
+        // Local monitor: captures events when our app is focused
+        localMonitor = NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
+            self?.handleFlagsChanged(event)
+            return event
         }
     }
 
     func stop() {
-        if let monitor = monitor {
+        if let monitor = globalMonitor {
             NSEvent.removeMonitor(monitor)
-            self.monitor = nil
+            globalMonitor = nil
+        }
+        if let monitor = localMonitor {
+            NSEvent.removeMonitor(monitor)
+            localMonitor = nil
         }
     }
 
@@ -66,3 +78,4 @@ class HotkeyMonitor {
         stop()
     }
 }
+
