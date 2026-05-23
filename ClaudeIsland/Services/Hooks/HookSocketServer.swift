@@ -107,7 +107,7 @@ typealias PermissionFailureHandler = @Sendable (_ sessionId: String, _ toolUseId
 /// Uses GCD DispatchSource for non-blocking I/O
 class HookSocketServer {
     static let shared = HookSocketServer()
-    static let socketPath = "/tmp/claude-island.sock"
+    static let socketPath = "/tmp/breadcrumb.sock"
 
     private var serverSocket: Int32 = -1
     private var acceptSource: DispatchSourceRead?

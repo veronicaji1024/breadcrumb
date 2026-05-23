@@ -1,55 +1,56 @@
 <div align="center">
   <img src="ClaudeIsland/Assets.xcassets/AppIcon.appiconset/icon_128x128.png" alt="Logo" width="100" height="100">
-  <h3 align="center">Claude Island</h3>
+  <h3 align="center">Breadcrumb</h3>
   <p align="center">
-    A macOS menu bar app that brings Dynamic Island-style notifications to Claude Code CLI sessions.
+    macOS 灵动岛风格的 AI 协作历史追踪工具
     <br />
-    <br />
-    <a href="https://github.com/farouqaldori/claude-island/releases/latest" target="_blank" rel="noopener noreferrer">
-      <img src="https://img.shields.io/github/v/release/farouqaldori/claude-island?style=rounded&color=white&labelColor=000000&label=release" alt="Release Version" />
-    </a>
-    <a href="#" target="_blank" rel="noopener noreferrer">
-      <img alt="GitHub Downloads" src="https://img.shields.io/github/downloads/farouqaldori/claude-island/total?style=rounded&color=white&labelColor=000000">
-    </a>
+    跨 session 回溯 Claude Code 交互记录，沉淀协作 SOP
   </p>
 </div>
 
-## Features
+## 核心功能
 
-- **Notch UI** — Animated overlay that expands from the MacBook notch
-- **Live Session Monitoring** — Track multiple Claude Code sessions in real-time
-- **Permission Approvals** — Approve or deny tool executions directly from the notch
-- **Chat History** — View full conversation history with markdown rendering
-- **Auto-Setup** — Hooks install automatically on first launch
+- **灵动岛 UI** — 从 MacBook 刘海区域展开的浮层交互
+- **实时 Session 监控** — 同时追踪多个 Claude Code 会话状态
+- **权限审批** — 直接在灵动岛上 Approve/Deny AI 的操作请求
+- **历史检索** — 按项目(project-based)和时间(time-based)两种维度回溯对话记录
+- **双击 ⌘ 唤起** — 全局快捷键随时展开/收起
 
-## Requirements
+## 使用场景
 
-- macOS 15.6+
-- Claude Code CLI
+- 回顾 AI 的决策轨迹，找到关键转折点
+- 跨 session 搜索特定对话内容
+- 复盘项目中的 AI 协作模式，优化工作流
+- 不切换窗口直接审批 Claude 的工具调用
 
-## Install
+## 安装
 
-Download the latest release or build from source:
+macOS 15.6+ / Claude Code CLI
 
 ```bash
+# 从源码构建
 xcodebuild -scheme ClaudeIsland -configuration Release build
 ```
 
-## How It Works
+构建后将 `.app` 拖到 `/Applications`，在菜单中开启 "Launch at Login" 即可开机自启。
 
-Claude Island installs hooks into `~/.claude/hooks/` that communicate session state via a Unix socket. The app listens for events and displays them in the notch overlay.
+## 触发方式
 
-When Claude needs permission to run a tool, the notch expands with approve/deny buttons—no need to switch to the terminal.
+| 方式 | 行为 |
+|------|------|
+| 鼠标悬停刘海 1 秒 | 自动展开 |
+| 双击 ⌘ (Command) | 切换展开/收起 |
 
-## Analytics
+首次使用需在「系统设置 → 隐私与安全性 → 辅助功能」中授权。
 
-Claude Island uses Mixpanel to collect anonymous usage data:
+## 工作原理
 
-- **App Launched** — App version, build number, macOS version
-- **Session Started** — When a new Claude Code session is detected
-
-No personal data or conversation content is collected.
+Breadcrumb 在 `~/.claude/hooks/` 安装钩子，通过 Unix socket 接收 Claude Code 的会话状态事件，在灵动岛浮层中实时展示。
 
 ## License
 
 Apache 2.0
+
+## 致谢
+
+基于 [claude-island](https://github.com/farouqaldori/claude-island) 开发。
