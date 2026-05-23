@@ -206,6 +206,72 @@ class HistorySearchManager: ObservableObject {
         return sessions
     }
 
+    private nonisolated static func readSessionInfo(filePath: String) -> (firstMessage: String?, lastMessage: String?, cwd: String?) {
+        guard let handle = FileHandle(forReadingAtPath: filePath) else { return (nil, nil, nil) }
+        defer { try? handle.close() }
+
+        guard let data = try? handle.read(upToCount: 32768),
+              let content = String(data: data, encoding: .utf8) else {
+            return (nil, nil, nil)
+        }
+
+        var cwd: String?
+        var firstMsg: String?
+        var lastMsg: String?
+
+        for line in content.components(separatedBy: "\n") where !line.isEmpty {
+            guard let lineData = line.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: lineData) as? [String: Any] else {
+                continue
+            }
+
+            if cwd == nil, let msgCwd = json["cwd"] as? String {
+                cwd = msgCwd
+            }
+
+            guard json["type"] as? String == "user",
+                  json["isMeta"] as? Bool != true,
+                  let message = json["message"] as? [String: Any] else {
+                continue
+            }
+
+            let text = extractText(message["content"])
+            guard !text.isEmpty,
+                  !text.hasPrefix("<command-name>"),
+                  !text.hasPrefix("<local-command"),
+                  !text.hasPrefix("Caveat:") else {
+                continue
+            }
+
+            let cleaned = text.replacingOccurrences(of: "\n", with: " ").trimmingCharacters(in: .whitespaces)
+            let truncated = String(cleaned.prefix(120))
+
+            if firstMsg == nil {
+                firstMsg = truncated
+            }
+            lastMsg = truncated
+        }
+
+        return (firstMsg, lastMsg, cwd)
+    }
+
+    private nonisolated static func generateTitle(from message: String) -> String {
+        // Use the first sentence or up to 50 characters as title
+        let cleaned = message.trimmingCharacters(in: .whitespaces)
+        if let dotRange = cleaned.range(of: "。"),
+           cleaned.distance(from: cleaned.startIndex, to: dotRange.lowerBound) < 60 {
+            return String(cleaned[..<dotRange.lowerBound])
+        }
+        if let dotRange = cleaned.range(of: ". "),
+           cleaned.distance(from: cleaned.startIndex, to: dotRange.lowerBound) < 60 {
+            return String(cleaned[..<dotRange.lowerBound])
+        }
+        if cleaned.count <= 50 {
+            return cleaned
+        }
+        return String(cleaned.prefix(50)) + "..."
+    }
+
     private nonisolated static func readFirstUserMessageAndCwd(filePath: String) -> (String?, String?) {
         guard let handle = FileHandle(forReadingAtPath: filePath) else { return (nil, nil) }
         defer { try? handle.close() }
