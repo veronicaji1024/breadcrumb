@@ -356,7 +356,9 @@ struct HistorySearchView: View {
                 id: sessionId,
                 project: project,
                 projectDisplay: project,
+                title: "...",
                 firstMessage: "...",
+                lastMessage: "...",
                 timestamp: Date(),
                 fileSize: 0
             )
