@@ -235,6 +235,14 @@ class NotchViewModel: ObservableObject {
 
     // MARK: - Actions
 
+    func toggle() {
+        if status == .opened {
+            notchClose()
+        } else {
+            notchOpen(reason: .click)
+        }
+    }
+
     func notchOpen(reason: NotchOpenReason = .unknown) {
         openReason = reason
         status = .opened

@@ -8,6 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var windowManager: WindowManager?
     private var screenObserver: ScreenObserver?
     private var updateCheckTimer: Timer?
+    private var hotkeyMonitor: HotkeyMonitor?
 
     static var shared: AppDelegate?
     let updater: SPUUpdater
@@ -77,6 +78,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self?.handleScreenChange()
         }
 
+        // Setup double-tap Command hotkey
+        hotkeyMonitor = HotkeyMonitor()
+        hotkeyMonitor?.onDoubleTap = { [weak self] in
+            self?.windowManager?.windowController?.viewModel.toggle()
+        }
+        hotkeyMonitor?.start()
+
         if updater.canCheckForUpdates {
             updater.checkForUpdates()
         }
@@ -94,6 +102,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         Mixpanel.mainInstance().flush()
         updateCheckTimer?.invalidate()
+        hotkeyMonitor?.stop()
         screenObserver = nil
     }
 
