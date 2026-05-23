@@ -169,15 +169,7 @@ class NotchViewModel: ObservableObject {
         hoverTimer?.cancel()
         hoverTimer = nil
 
-        // Start hover timer to auto-expand after 1 second
-        if isHovering && (status == .closed || status == .popping) {
-            let workItem = DispatchWorkItem { [weak self] in
-                guard let self = self, self.isHovering else { return }
-                self.notchOpen(reason: .hover)
-            }
-            hoverTimer = workItem
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: workItem)
-        }
+        // Hover auto-expand disabled — only open on explicit click or double-tap ⌘
     }
 
     private func handleMouseDown() {
@@ -305,12 +297,8 @@ class NotchViewModel: ObservableObject {
         contentType = .historySearch
     }
 
-    /// Perform boot animation: expand briefly then collapse
+    /// Boot animation disabled — stay closed until user explicitly opens
     func performBootAnimation() {
-        notchOpen(reason: .boot)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self, self.openReason == .boot else { return }
-            self.notchClose()
-        }
+        // No-op: don't auto-expand on launch
     }
 }

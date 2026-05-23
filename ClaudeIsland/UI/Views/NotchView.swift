@@ -438,11 +438,8 @@ struct NotchView: View {
         let currentIds = Set(sessions.map { $0.stableId })
         let newPendingIds = currentIds.subtracting(previousPendingIds)
 
-        if !newPendingIds.isEmpty &&
-           viewModel.status == .closed &&
-           !TerminalVisibilityDetector.isTerminalVisibleOnCurrentSpace() {
-            viewModel.notchOpen(reason: .notification)
-        }
+        // Disabled: don't auto-open on notifications
+        // Only open on explicit click or double-tap ⌘
 
         previousPendingIds = currentIds
     }
