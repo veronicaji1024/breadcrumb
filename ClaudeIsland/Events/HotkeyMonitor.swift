@@ -55,7 +55,7 @@ class HotkeyMonitor {
             commandWasAlone = flags.intersection(otherModifiers).isEmpty
         } else if commandWasAlone {
             // Command released and no other modifiers were involved
-            let now = ProcessInfo.processInfo.systemUptime
+            let now = Date().timeIntervalSince1970
             let elapsed = now - lastCommandReleaseTime
 
             if elapsed < doubleTapInterval && elapsed > 0.05 {
